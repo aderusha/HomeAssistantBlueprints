@@ -1,0 +1,53 @@
+blueprint:
+  name: HASP button to trigger a scene
+  description: Create a button on the HASP to trigger a scene
+  domain: automation
+  input:
+    hasp_page:
+      name: HASP Page
+      description: "Select the HASP page (1-11) for this scene button"
+      selector:
+        number:
+          min: 1
+          max: 11
+          mode: slider
+    hasp_button:
+      name: HASP Button
+      description: "Select the HASP button for this scene"
+      selector:
+        number:
+          min: 1
+          max: 15
+          mode: slider
+    hasp_scene:
+      name: Scene to trigger
+      description: "Select a scene for this button to trigger"
+      selector:
+        entity:
+          domain: scene
+    hasp_label:
+      name: HASP Button Label
+      description: "Enter text to appear on the button"
+    hasp_font:
+      name: HASP Button Font
+      description: "Select the text font for this button label"
+      selector:
+        number:
+          min: 0
+          max: 10
+          mode: slider
+
+mode: restart
+max_exceeded: silent
+variables:
+  hasppage: !input hasp_page
+  haspbutton: !input hasp_button
+
+trigger:
+  - platform: mqtt
+    topic: "hasp/plate01/state/p[1].b[4]"
+    payload: "ON"
+
+action:
+  - service: scene.turn_on
+    entity_id: !input hasp_scene
