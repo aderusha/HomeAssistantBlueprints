@@ -3,6 +3,13 @@ blueprint:
   description: Create a button on the HASP to trigger a scene
   domain: automation
   input:
+    hasp_name:
+      name: HASP Device
+      description: "Select the HASP device"
+      selector:
+        device:
+          manufacturer: "HASwitchPlate"
+          model: "HASP v1.0.0"
     hasp_page:
       name: HASP Page
       description: "Select the HASP page (1-11) for this scene button"
@@ -41,15 +48,20 @@ mode: restart
 max_exceeded: silent
 
 variables:
+  haspname: !input hasp_name
   hasppage: !input hasp_page
   haspbutton: !input hasp_button
 
 trigger:
   - platform: mqtt
-    topic: "hasp/plate01/state/json"
+    topic: "hasp/+/state/json"
 
 condition: '{{ (trigger.payload_json.event == "p[" + hasppage + "].b[" + haspbutton + "]") and trigger.payload_json.value == "ON" }}'
 
 action:
   - service: scene.turn_on
     entity_id: !input hasp_scene
+  - service: mqtt.publish
+    data:
+      topic: "debug"
+      payload_template: 'haspname: {{haspname}}'
