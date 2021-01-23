@@ -47,7 +47,8 @@ variables:
 trigger:
   - platform: mqtt
     topic: "hasp/plate01/state/json"
-    payload_template: '{{ (trigger.payload_json.event == "p[" + hasppage + "].b[" + haspbutton + "]") and trigger.payload_json.value == "ON" }}'
+
+condition: '{{ (trigger.payload_json.event == "p[" + hasppage + "].b[" + haspbutton + "]") and trigger.payload_json.value == "ON" }}'
 
 action:
   - service: scene.turn_on
